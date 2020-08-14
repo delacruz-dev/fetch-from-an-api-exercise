@@ -6,6 +6,6 @@ describe("Pokémon app", () => {
   it("has a list of Pokémons including Bulbasaur", () => {
     const { getByText } = render(<App />);
 
-    expect(getByText("bulbasaur")).toBeInTheDocument();
+    expect(getByText(/bulbasaur/i)).toBeInTheDocument();
   });
 });
