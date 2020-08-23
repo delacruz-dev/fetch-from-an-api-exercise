@@ -30,4 +30,68 @@ describe("Pokémon app", () => {
       ).toBeInTheDocument();
     }
   });
+
+  it("shows an error message when there's a network error", async () => {
+    // Modificamos el comportamiento de la función fetch para que devuelva un error de conexión
+    window.fetch.mockRejectedValueOnce(
+      new TypeError("Network connection lost")
+    );
+
+    render(<App />);
+
+    // Comprobamos que se han obtenido los resultados utilizando fetch
+    expect(window.fetch).toHaveBeenCalledWith(
+      "https://pokeapi.co/api/v2/pokemon"
+    );
+    expect(window.fetch).toHaveBeenCalledTimes(1);
+
+    // Comprobamos que se muestra un error controlado
+    expect(
+      await screen.findByText(
+        "There was a network error. Please try again in a few seconds."
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("shows an error message when there's a server error", async () => {
+    // Modificamos el comportamiento de la función fetch para que devuelva un error HTTP 500
+    window.fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+    });
+
+    render(<App />);
+
+    // Comprobamos que se han obtenido los resultados utilizando fetch
+    expect(window.fetch).toHaveBeenCalledWith(
+      "https://pokeapi.co/api/v2/pokemon"
+    );
+    expect(window.fetch).toHaveBeenCalledTimes(1);
+
+    // Comprobamos que se muestra un error controlado
+    expect(
+      await screen.findByText("There was a server error.")
+    ).toBeInTheDocument();
+  });
+
+  it("shows an error message when there's a service not found error", async () => {
+    // Modificamos el comportamiento de la función fetch para que devuelva un error HTTP 404
+    window.fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+    });
+
+    render(<App />);
+
+    // Comprobamos que se han obtenido los resultados utilizando fetch
+    expect(window.fetch).toHaveBeenCalledWith(
+      "https://pokeapi.co/api/v2/pokemon"
+    );
+    expect(window.fetch).toHaveBeenCalledTimes(1);
+
+    // Comprobamos que se muestra un error controlado
+    expect(
+      await screen.findByText("The requested resource was a not found.")
+    ).toBeInTheDocument();
+  });
 });
